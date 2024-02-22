@@ -12,6 +12,7 @@ use syn::{
 };
 
 use crate::{doc::docs_from_attrs, map_type::map_type, DEFAULT_XDR_RW_LIMITS};
+use super::filter_out_flux_attrs;
 
 #[allow(clippy::too_many_arguments)]
 pub fn derive_fn_spec(
@@ -155,6 +156,8 @@ pub fn derive_fn_spec(
     } else {
         None
     };
+
+    let attrs = filter_out_flux_attrs(attrs);
 
     // Generated code.
     Ok(quote! {

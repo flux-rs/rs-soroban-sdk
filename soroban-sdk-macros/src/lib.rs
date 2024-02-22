@@ -31,7 +31,7 @@ use sha2::{Digest, Sha256};
 use std::fs;
 use syn::{
     parse_macro_input, parse_str, spanned::Spanned, Data, DeriveInput, Error, Fields, ItemImpl,
-    ItemStruct, LitStr, Path, Type, Visibility,
+    ItemStruct, LitStr, Path, Type, Visibility, Attribute,
 };
 use syn_ext::HasFnsItem;
 
@@ -615,4 +615,16 @@ pub fn contractimport(metadata: TokenStream) -> TokenStream {
         Err(e) => Error::new(Span::call_site(), e.to_string()).into_compile_error(),
     }
     .into()
+}
+
+fn filter_out_flux_attrs(attrs: &[Attribute]) -> Vec<&Attribute> {
+    attrs.iter().filter(|attr| !is_flux_attr(attr)).collect()
+}
+
+fn is_flux_attr(attr: &Attribute) -> bool {
+    attr.path()
+        .segments
+        .first()
+        .map(|s| s.ident.eq("flux_tool"))
+        .unwrap_or(false)
 }

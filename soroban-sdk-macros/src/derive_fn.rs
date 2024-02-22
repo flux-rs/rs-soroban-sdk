@@ -8,6 +8,7 @@ use syn::{
     token::{Colon, Comma},
     Attribute, Error, FnArg, Ident, Pat, PatIdent, PatType, Path, Type, TypePath, TypeReference,
 };
+use super::filter_out_flux_attrs;
 
 #[allow(clippy::too_many_arguments)]
 pub fn derive_fn(
@@ -113,6 +114,8 @@ pub fn derive_fn(
         let compile_errors = errors.iter().map(Error::to_compile_error);
         return Err(quote! { #(#compile_errors)* });
     }
+
+    let attrs = filter_out_flux_attrs(attrs);
 
     // Generated code.
     Ok(quote! {
